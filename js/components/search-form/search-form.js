@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js';
+import { LitElement, html, css } from 'lit';
 
 export class SearchForm extends LitElement {
   static styles = css``;

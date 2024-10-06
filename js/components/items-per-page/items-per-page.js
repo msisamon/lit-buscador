@@ -1,19 +1,19 @@
-import { LitElement, html } from 'https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js';
+import { LitElement, html } from 'lit';
 
 export class ItemsPerPage extends LitElement {
-    static properties = {
-        numberItems: { type: Array }
-    };
+  static properties = {
+    numberItems: { type: Array }
+  };
 
-    handleChange(event) {
-        const value = Number(event.target.value);
-        this.dispatchEvent(new CustomEvent('items-per-page-change', {
-            detail: { value }
-        }));
-    }
+  handleChange(event) {
+    const value = Number(event.target.value);
+    this.dispatchEvent(new CustomEvent('items-per-page-change', {
+      detail: { value }
+    }));
+  }
 
-    render() {
-        return html`
+  render() {
+    return html`
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
       <div class="mb-3">
@@ -23,7 +23,7 @@ export class ItemsPerPage extends LitElement {
         </select>
       </div>
     `;
-    }
+  }
 }
 
 customElements.define('items-per-page', ItemsPerPage);

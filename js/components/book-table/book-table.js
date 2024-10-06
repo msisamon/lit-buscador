@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js';
+import { LitElement, html, css } from 'lit';
 
 export class Table extends LitElement {
   static styles = css`
@@ -9,7 +9,7 @@ export class Table extends LitElement {
 
   static properties = {
     books: { type: Array },
-    columns: { type: Object }, // Now expect an object for columns
+    columns: { type: Object },
     itemsPerPage: { type: Number },
     currentPage: { type: Number },
     selectedBook: { type: Object },
@@ -23,7 +23,12 @@ export class Table extends LitElement {
     this.selectedBook = null;
     this.pagination = false;
     this.itemsPerPage = 5;
-    this.columns = { isbn: 'ISBN', fecha: 'Fecha', genero: 'Género', autor: 'Autor' }; // Default columns
+    this.numberItems = [];
+    this.columns = { isbn: 'ISBN', fecha: 'Fecha', genero: 'Género', autor: 'Autor' };
+  }
+
+  firstUpdated() {
+    this.itemsPerPage = this.numberItems[0]
   }
 
   updated(changedProperties) {
@@ -87,8 +92,8 @@ export class Table extends LitElement {
     `;
     document.body.appendChild(modalContainer);
 
-    const modal = new bootstrap.Modal(modalContainer.querySelector('#bookModal'));
-    modal.show();
+    //const modal = new bootstrap.Modal(modalContainer.querySelector('#bookModal'));
+    //modal.show();
 
     modalContainer.querySelector('#bookModal').addEventListener('hidden.bs.modal', () => {
       document.body.removeChild(modalContainer);

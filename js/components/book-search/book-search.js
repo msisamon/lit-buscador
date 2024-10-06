@@ -1,4 +1,4 @@
-import { LitElement, html } from 'https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js';
+import { LitElement, html } from 'lit';
 import '../book-table/book-table.js';
 import '../items-per-page/items-per-page.js';
 import '../pagination-controls/pagination-controls.js';
@@ -18,7 +18,6 @@ export class BookSearch extends LitElement {
     }
 
     async handleSearch(event) {
-
         this.books = this.createMockBooks();
         this.requestUpdate();
     }
