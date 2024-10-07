@@ -1,42 +1,36 @@
 import { LitElement, html, css } from 'lit';
 
-export class Table extends LitElement {
+export class BookTable extends LitElement {
   static styles = css`
     .pagination {
       margin: 20px 0;
+    }
+    .table-button {
+      margin: 5px;
     }
   `;
 
   static properties = {
     books: { type: Array },
-    columns: { type: Object },
+    columns: { type: Array },
     itemsPerPage: { type: Number },
     currentPage: { type: Number },
-    selectedBook: { type: Object },
-    pagination: { type: Boolean }
+    pagination: { type: Boolean },
+    numberItems: { type: Array }
   };
 
   constructor() {
     super();
     this.books = [];
     this.currentPage = 1;
-    this.selectedBook = null;
     this.pagination = false;
     this.itemsPerPage = 5;
-    this.numberItems = [];
-    this.columns = { isbn: 'ISBN', fecha: 'Fecha', genero: 'Género', autor: 'Autor' };
+    this.numberItems = [5, 10, 20];
+    this.columns = [];
   }
-
   firstUpdated() {
     this.itemsPerPage = this.numberItems[0]
   }
-
-  updated(changedProperties) {
-    if (changedProperties.has('pagination')) {
-      this.pagination = this.pagination === 'true' || this.pagination === true;
-    }
-  }
-
   get totalPages() {
     return Math.ceil(this.books.length / this.itemsPerPage);
   }
@@ -46,8 +40,7 @@ export class Table extends LitElement {
       return this.books;
     }
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    return this.books.slice(start, end);
+    return this.books.slice(start, start + this.itemsPerPage);
   }
 
   handlePageChange(event) {
@@ -56,48 +49,37 @@ export class Table extends LitElement {
   }
 
   handleItemsPerPageChange(event) {
-    this.itemsPerPage = event.detail.value;
+    this.itemsPerPage = event.detail.itemsPerPage;
     this.currentPage = 1;
     this.requestUpdate();
   }
 
-  handleViewMore(book) {
-    this.selectedBook = book;
-    this.renderModal();
-  }
+  renderCellContent(column, book) {
+    switch (column.type) {
+      case 'text':
+        return html`<span>${book[column.property]}</span>`;
 
-  renderModal() {
-    const modalContainer = document.createElement('div');
-    modalContainer.innerHTML = `
-      <div class="modal fade" id="bookModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="bookModalLabel">Book Details</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <p><strong>ISBN:</strong> ${this.selectedBook.isbn}</p>
-              <p><strong>Pages:</strong> ${this.selectedBook.paginas}</p>
-              <p><strong>Reading Time:</strong> ${this.selectedBook.tiempoLectura}</p>
-              <p><strong>Description:</strong> ${this.selectedBook.descripcion}</p>
-              <p><strong>Price:</strong> ${this.selectedBook.precio}</p>
-              <p><strong>Publication Year:</strong> ${this.selectedBook.anoEdicion}</p>
-              <p><strong>Binding:</strong> ${this.selectedBook.encuadernacion}</p>
-              <p><strong>Language:</strong> ${this.selectedBook.idioma}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modalContainer);
+      case 'number':
+        return html`<span>${book[column.property]}</span>`;
 
-    //const modal = new bootstrap.Modal(modalContainer.querySelector('#bookModal'));
-    //modal.show();
+      case 'date':
+        return html`<span>${new Date(book[column.property]).toLocaleDateString()}</span>`;
 
-    modalContainer.querySelector('#bookModal').addEventListener('hidden.bs.modal', () => {
-      document.body.removeChild(modalContainer);
-    });
+      case 'button':
+        return html`
+          <button 
+            class="btn btn-primary table-button" 
+            @click="${() => column.action(book)}">
+            ${column.label}
+          </button>
+        `;
+
+      case 'slot':
+        return html`<slot name="${column.property}"></slot>`;
+
+      default:
+        return html`<span>${book[column.property]}</span>`;
+    }
   }
 
   render() {
@@ -118,21 +100,13 @@ export class Table extends LitElement {
             <table class="table table-striped table-bordered mt-3">
               <thead>
                 <tr>
-                  ${Object.values(this.columns).map(columnName => html`<th>${columnName}</th>`)}
-                  <th>Acción</th>
+                  ${this.columns.map(column => html`<th>${column.header}</th>`)}
                 </tr>
               </thead>
               <tbody>
                 ${this.paginatedBooks.map(book => html`
                   <tr>
-                    ${Object.keys(this.columns).map(field => html`<td>${book[field]}</td>`)}
-                    <td>
-                      <button 
-                        class="btn btn-primary" 
-                        @click="${() => this.handleViewMore(book)}">
-                        Ver más
-                      </button>
-                    </td>
+                    ${this.columns.map(column => html`<td>${this.renderCellContent(column, book)}</td>`)}
                   </tr>
                 `)}
               </tbody>
@@ -153,4 +127,4 @@ export class Table extends LitElement {
   }
 }
 
-customElements.define('book-table', Table);
+customElements.define('book-table', BookTable);

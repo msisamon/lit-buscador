@@ -3,6 +3,7 @@ import { LitElement, html, css } from 'lit';
 export class HNav extends LitElement {
   static properties = {
     brand: { type: String },
+    brandHref: { type: String },
   };
 
   static styles = css`
@@ -14,6 +15,7 @@ export class HNav extends LitElement {
   constructor() {
     super();
     this.brand = 'Brand';
+    this.brandHref = '#';
   }
 
   render() {
@@ -27,7 +29,7 @@ export class HNav extends LitElement {
         crossorigin="anonymous"></script>
       <nav class="navbar navbar-expand-sm bg-body-tertiary">
         <div class="container">
-          <a class="navbar-brand" href="#">${this.brand}</a>
+          <a class="navbar-brand" href=${this.brandHref}>${this.brand}</a>
           <button
             class="navbar-toggler"
             type="button"
